@@ -1,0 +1,19 @@
+name: Deployment to server
+on:
+  push:
+    branches:
+    - deployment
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup key
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Connect and run
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} python3.8 --version
+
