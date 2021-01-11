@@ -23,7 +23,8 @@ jobs:
     - name: Make rsync to bot
       run: rsync -a -e ssh ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:bot/
     - name: Connect and run
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} cd bot && ls -la && python3.8 --version
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd bot && ls -la && python3.8 --version"
+      
       
       
 
