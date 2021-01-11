@@ -21,9 +21,10 @@ jobs:
     - name: SSH trust host
       run: for ip in $(dig @1.1.1.1 ${{ secrets.SSH_HOST }} +short); do ssh-keyscan ${{ secrets.SSH_HOST  }},$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     - name: Make rsync to bot
-      rsync -a -e ssh ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:bot/
+      run: rsync -a -e ssh ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:bot/
     - name: Connect and run
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} cd bot && ls -la && python3.8 --version
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd bot && ls -la && python3.8 --version"
+      
       
       
 
