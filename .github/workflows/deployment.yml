@@ -8,6 +8,8 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
+    - name: Add Host Key
+      run: ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
     - name: Checkout
       uses: actions/checkout@v1
     - name: Setup key
