@@ -38,7 +38,7 @@ environment=HOME="/home/ubuntu",USER="ваш юзер сервера"
 stderr_logfile=/home/ubuntu/telegrambot/logfile_err.log
 stdout_logfile=/home/ubuntu/telegrambot/logfile.log
 
-******файл bot.conf******
+******файл bot.conf конец******
 
 В файловой системе создаем в папке home, папку ubuntu, в ней папку telegrambot
 
