@@ -5,8 +5,8 @@ cur = conn.cursor()
 
 
 # сохранение данных для входа в аккаунт
-async def save_login_details_in_db(login, password):
-    cur.execute("""INSERT INTO login_details (login, password) VALUES (?, ?)""", (login, password))
+async def save_login_details_in_db(login, password, user_id):
+    cur.execute("""INSERT INTO login_details (login, password, user_id) VALUES (?, ?, ?)""", (login, password, user_id))
     conn.commit()
 
 
@@ -60,3 +60,20 @@ def select_text_message():
     msg_text_db = cur.fetchone()
 
     return msg_text_db[0]
+
+
+# получаем user_id
+async def get_user_id_from_db():
+    cur.execute("""SELECT user_id FROM login_details""")
+    user_id = cur.fetchone()
+
+    return user_id[0]
+
+
+# чистим все таблицы в БД
+async def clear_all_tables_in_db():
+    cur.execute("""DELETE FROM login_details""")
+    conn.commit()
+
+    cur.execute("""DELETE FROM message_data""")
+    conn.commit()
