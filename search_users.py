@@ -4,7 +4,11 @@ import math
 
 from database import *
 
-browser = webdriver.Chrome()  # создаем объект Chrome браузера
+# активация headless режима
+option = webdriver.ChromeOptions()
+option.headless = True
+
+browser = webdriver.Chrome(options=option)  # создаем объект Chrome браузера, принимаем вышесозданую опцию
 
 
 # запуск процесса рассылки сообщений
