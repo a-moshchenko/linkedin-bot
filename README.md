@@ -16,7 +16,7 @@ Linkedin bot
 Заменить на скрипт для (ре)старта бота
 
 
-#ИНСТРУКЦИЯ ДЕПЛОЯ НА СЕРВЕР ПО SSH
+# ИНСТРУКЦИЯ ДЕПЛОЯ НА СЕРВЕР ПО SSH
 ВСЕ КОМАНДЫ ВВОДЯТСЯ С РУТ ДОСТУПОМ
 
 "sudo apt update" - обновляем файлы на сервере, для избегания лишних ошибок
@@ -63,8 +63,8 @@ restart telegrambot - перезапуск
 
 ---------‐установка chrome----------
 Скачваем Chrome:
-1
+
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 И сразу же устанавливаем:
-2
+
 sudo dpkg -i google-chrome-stable_current_amd64.deb
