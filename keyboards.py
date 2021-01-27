@@ -9,27 +9,17 @@ start_button = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-one_company_or_file = ReplyKeyboardMarkup(
+filter = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton("Сфера"),
             KeyboardButton("Должность")
         ],
         [
-            KeyboardButton("Изменить данные")
+            KeyboardButton("Поехали!!")
         ],
         [
-            KeyboardButton("Поехали!!")
-        ]
-    ],
-    resize_keyboard=True
-)
-
-confirm_or_cancel_mailing = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton("Подтвердить"),
-            KeyboardButton("Отменить")
+            KeyboardButton("Изменить данные")
         ]
     ],
     resize_keyboard=True
