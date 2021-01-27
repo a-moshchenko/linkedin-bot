@@ -12,11 +12,14 @@ start_button = ReplyKeyboardMarkup(
 one_company_or_file = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton("Одну компанию"),
-            KeyboardButton("Файл")
+            KeyboardButton("Сфера"),
+            KeyboardButton("Должность")
         ],
         [
             KeyboardButton("Изменить данные")
+        ],
+        [
+            KeyboardButton("Поехали!!")
         ]
     ],
     resize_keyboard=True

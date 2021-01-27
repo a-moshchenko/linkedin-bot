@@ -7,7 +7,7 @@ from main import dp, bot
 from keyboards import *
 from FSM import *
 from database import *
-from search_users import check_users_from_sales_navigator_form
+from scraper import Scraper
 
 
 @dp.message_handler(commands=["start"])
@@ -51,7 +51,8 @@ async def save_login_and_password(msg: types.Message, state: FSMContext):
     await msg.answer("Отлично! Вот данные, которые вы ввели:\n"
                      f"Логин: {login_details['login']}\n"
                      f"Пароль: {login_details['password']}\n"
-                     "Вы хотите вставить профиль только одной компании или отправить файлом целый список? "
+                     "Вы можете выбрать фильтры сферы деятельности"
+                     "и должности людей которым будем делать рассылку"
                      "В случае если данные введены не верно, их можно изменить.",
                      reply_markup=one_company_or_file)
 
@@ -66,15 +67,6 @@ async def change_login_details(msg: types.Message):
 
 
 # !!!!!!!! НАЧАЛО СЦЕНАРИЯ С РАССЫЛКОЙ ДЛЯ ОДНОЙ КОМПАНИИ !!!!!!!!
-
-# если нужно вставить профиль одной компании
-@dp.message_handler(Text(equals="Одну компанию"))
-async def paste_one_company_profile_link(msg: types.Message):
-    await msg.answer("Вставьте ссылку на профиль комнании на LinkedIn.",
-                     reply_markup=ReplyKeyboardRemove())
-
-    await OneCompanyProfileStates.paste_one_company_profile.set()
-
 
 # получаем тему(заголовок) сообщения
 @dp.message_handler(state=OneCompanyProfileStates.paste_one_company_profile)
@@ -140,6 +132,5 @@ async def confirm_mailing(msg: types.Message, state: FSMContext):
 
     await msg.answer("Рассылка подтверждена и начинается.")
 
-    await check_users_from_sales_navigator_form()
 
 # !!!!!!!! КОНЕЦ СЦЕНАРИЯ С РАССЫЛКОЙ ДЛЯ ОДНОЙ КОМПАНИИ !!!!!!!!
