@@ -5,8 +5,8 @@ cur = conn.cursor()
 
 
 # сохранение данных для входа в аккаунт
-async def save_login_details_in_db(login, password, user_id):
-    cur.execute("""INSERT INTO login_details (login, password, user_id) VALUES (?, ?, ?)""", (login, password, user_id))
+async def save_login_details_in_db(login, password):
+    cur.execute("""INSERT INTO login_details (login, password) VALUES (?, ?)""", (login, password))
     conn.commit()
 
 

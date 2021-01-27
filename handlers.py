@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import ReplyKeyboardRemove
 
-from main import dp
+from main import dp, bot
 from keyboards import *
 from FSM import *
 from database import *
@@ -12,7 +12,7 @@ from search_users import check_users_from_sales_navigator_form
 
 @dp.message_handler(commands=["start"])
 async def start_bot(msg: types.Message):
-    await msg.answer("Привет! Я LinkedIn Bot! Буду помогать с рассылкой сообщений. ",
+    await msg.answer(f"Привет! Я LinkedIn Bot! Буду помогать с рассылкой сообщений. ",
                      reply_markup=start_button)
 
 
