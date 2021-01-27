@@ -2,7 +2,6 @@ import requests
 from selenium import webdriver
 import json
 import time
-import tqdm
 
 from database import *
 from main import bot
