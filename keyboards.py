@@ -41,6 +41,22 @@ def get_button_list(lst):
            ] for i in lst
        ]
     )
-    my_buttons["keyboard"].append([{"text": "Ok"}])
+    my_buttons.add("Ok")
             
     return my_buttons
+
+
+send_message_button = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("Тема")
+        ],
+        [
+            KeyboardButton("Сообщение")
+        ],
+        [
+            KeyboardButton("Старт")
+        ]
+    ],
+    resize_keyboard=True
+)

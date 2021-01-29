@@ -7,7 +7,8 @@ from main import dp, bot
 from keyboards import (start_button,
                        go_button,
                        filter_button,
-                       get_button_list)
+                       get_button_list,
+                       send_message_button)
 from FSM import LogInLinkedinStates
 from database import save_login_details_in_db
 from scraper import Scraper
@@ -84,7 +85,7 @@ async def filter_by_function(msg: types.Message):
 @dp.message_handler(Text(equals="Поиск"))
 async def done(msg: types.Message):
     scrapper.search()
-    scrapper.get_count_users()
-    await msg.answer("Найдено ", reply_markup=get_button_list(lst))
+    # scrapper.get_count_users()
+    await msg.answer("Найдено количество", reply_markup=send_message_button)
 
 
