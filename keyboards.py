@@ -9,18 +9,38 @@ start_button = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-filter = ReplyKeyboardMarkup(
+go_button = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton("Сфера"),
+            KeyboardButton("Поехали")
+        ],
+    ],
+    resize_keyboard=True
+)
+
+filter_button = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("Деятельность")
+        ],
+        [
             KeyboardButton("Должность")
         ],
         [
-            KeyboardButton("Поехали!!")
-        ],
-        [
-            KeyboardButton("Изменить данные")
+            KeyboardButton("Поиск")
         ]
     ],
     resize_keyboard=True
 )
+
+def get_button_list(lst):
+    my_buttons = ReplyKeyboardMarkup(
+       keyboard=[
+           [
+            KeyboardButton(f"{i}")
+           ] for i in lst
+       ]
+    )
+    my_buttons["keyboard"].append([{"text": "Ok"}])
+            
+    return my_buttons

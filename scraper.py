@@ -12,30 +12,26 @@ class Scraper:
     """Подключается к LinkedIn и собирает
     """
     def __init__(self):
-        self.username = select_login()
-        self.password = select_password()
         self.browser = webdriver.Chrome(executable_path='./chromedriver')
 
-    def login(self):
+    def login(self, username, password):
         """CONNECTS TO LINKEDIN
         """
         self.browser.get('https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin')
-        time.sleep(3)
+        time.sleep(1)
 
         # вводим логин и пароль
         elementID = self.browser.find_element_by_id("username")
-        elementID.send_keys(self.username)
-        time.sleep(2)
+        elementID.send_keys(username)
 
         elementID = self.browser.find_element_by_id("password")
-        elementID.send_keys(self.password)
-        time.sleep(1)
+        elementID.send_keys(password)
 
         elementID.submit()
 
     def search_in(self):  # входим в поиск по фильтру и устанавливаем фильтр местоположения Ukraine
         self.browser.get("https://www.linkedin.com/sales/search/people")
-        time.sleep(15)
+        time.sleep(5)
         self.browser.find_element_by_xpath('/html/body/div[5]/header/div/div[3]/section/div/div/div[1]/div/div/div[1]/a').click()
         time.sleep(5)
 
@@ -104,7 +100,7 @@ class Scraper:
 
     def get_userlist(self, pages):  # возвращает список найденых пользователей
         page_list = {}
-        for i in range(1, int(pages) - 98):
+        for i in range(1, int(pages)):
             current_scroll_position, new_height = 0, 1
             while current_scroll_position <= new_height:  # прокрутка в конец страницы
                 current_scroll_position += 10
@@ -114,6 +110,9 @@ class Scraper:
             page_list.update(user)
             self.browser.find_element_by_xpath('/html/body/main/div[1]/div/section/div[2]/nav/button[2]/span').click()
         return page_list
+
+    def get_count_users(self):
+        pass
 
     def send_message(self, user_list, message):  # рассылка сообщений
         for name, link in user_list.items():
@@ -125,30 +124,20 @@ class Scraper:
             time.sleep(2)
             input_subject_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/input'
             textarea_message_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
-            self.browser.find_element_by_xpath(input_subject_xpath).send_keys(f'Добрий день! {name}')
+            self.browser.find_element_by_xpath(input_subject_xpath).send_keys('Добрий день!')
             time.sleep(1)
             self.browser.find_element_by_xpath(textarea_message_xpath).send_keys(message)
             time.sleep(2)
             self.browser.find_element_by_xpath('/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[2]/span/button').click()
             time.sleep(15)
 
+    def __del__(self):
+        self.browser.quit()
+
+
+def main():
+    pass
+
 
 if __name__ == '__main__':
-    message = '''Добрий день!Я - бот, який збирає HR для автоматизованого рiшення
-                 проблем вигорання IT-фахівців i iх утримання. Крім того, це вирішення
-                 допоможе більш ефективно вибудувати процес рекрутингу за допомого експертної
-                 системи, яка має можливість машинного навчання з боку користувача.'''
-    scraper = Scraper()
-    scraper.login()
-    time.sleep(30)
-    scraper.search_in()
-    scraper.click_to_industry()
-    scraper.input_industry(scraper.get_industry_list()[:4:])
-    scraper.click_to_functions()
-    scraper.input_functions(scraper.get_functions_list()[:2:])
-    scraper.search()
-    time.sleep(5)
-    page = scraper.get_search_pages()
-    userlist = scraper.get_userlist(page)
-    time.sleep(7)
-    scraper.send_message(userlist, message)
+    main()
