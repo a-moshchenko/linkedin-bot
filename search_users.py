@@ -8,7 +8,7 @@ from keyboards import start_button
 
 # активация headless режима
 option = webdriver.ChromeOptions()
-# option.headless = True
+option.headless = True
 
 browser = webdriver.Chrome(executable_path='./chromedriver', options=option)  # создаем объект Chrome браузера, принимаем вышесозданую опцию
 

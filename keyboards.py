@@ -9,6 +9,15 @@ start_button = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+stop_button = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("Отмена")
+        ]
+    ],
+    resize_keyboard=True
+)
+
 go_button = ReplyKeyboardMarkup(
     keyboard=[
         [
@@ -21,7 +30,7 @@ go_button = ReplyKeyboardMarkup(
 filter_button = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton("Деятельность")
+            KeyboardButton("Сфера деятельности")
         ],
         [
             KeyboardButton("Должность")
@@ -33,6 +42,7 @@ filter_button = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+
 def get_button_list(lst):
     my_buttons = ReplyKeyboardMarkup(
        keyboard=[
@@ -42,21 +52,43 @@ def get_button_list(lst):
        ]
     )
     my_buttons.add("Ok")
-            
+
     return my_buttons
 
 
-send_message_button = ReplyKeyboardMarkup(
+message_button = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton("Тема")
+            KeyboardButton("Посмотреть сообщение")
         ],
         [
-            KeyboardButton("Сообщение")
+            KeyboardButton("Изменить сообщение")
         ],
         [
-            KeyboardButton("Старт")
+            KeyboardButton("Начать раcсылку")
         ]
+    ],
+    resize_keyboard=True
+)
+
+
+done_button = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("Готово")
+        ],
+        [
+            KeyboardButton("Начать раcсылку")
+        ],
+    ],
+    resize_keyboard=True
+)
+
+go_to_message_button = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("К сообщению")
+        ],
     ],
     resize_keyboard=True
 )
