@@ -1,8 +1,9 @@
 *.pyc
 __pycache__
 `.pytest_cache
-venv/
+env/
 node_modules/
 package-lock.json
 .vscode
 .idea
+linkedin_bot.db

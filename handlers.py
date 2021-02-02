@@ -116,6 +116,7 @@ async def filter_by_industry(msg: types.Message, state: FSMContext):
     global filter
     filter = 'industry'
     scrapper.click_to_industry()
+    time.sleep(1)
     lst = scrapper.get_industry_list()
     await msg.answer("Выберите (можно несколько) и нажмите 'OK'", reply_markup=get_button_list(lst))
 
@@ -126,6 +127,7 @@ async def filter_by_function(msg: types.Message):
     global filter
     filter = 'functions'
     scrapper.click_to_functions()
+    time.sleep(1)
     lst = scrapper.get_functions_list()
     await msg.answer("Выберите (можно несколько) и нажмите 'OK'", reply_markup=get_button_list(lst))
 
@@ -197,11 +199,13 @@ async def start_send(msg: types.Message):
             for j in range(1, 26):
                 global stop
                 if stop:
+                    await msg.answer("Останавливаем рассылку")
                     scrapper.browser.quit()
                     break
                 time.sleep(5)
                 url = scrapper.get_profile_url(j).split('?')[0]
                 if url not in check_list:
+                    check_list.append(url)
                     time.sleep(5)
                     scrapper.open_user_page(j)
                     time.sleep(5)
@@ -227,15 +231,14 @@ async def start_send(msg: types.Message):
                     time.sleep(5)
                     scrapper.scroll()
             scrapper.next_page()
-    except Exception as e:
+    except KeyboardInterrupt as e:
         logging.warning(e)
         scrapper.browser.quit()
 
 
 @dp.message_handler(Text(equals="Отмена"))
 async def stop_send(msg: types.Message):
-    global stop
-    stop = True
+    exit()
     await msg.answer("Рассылка отменена", reply_markup=start_button)
 
 
