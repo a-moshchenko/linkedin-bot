@@ -55,66 +55,102 @@ class Scraper:
         time.sleep(3)
 
         # жмем на фильтр по местоположению
-        geo_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[1]/div/button"
+        try:
+            geo_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[1]/div/button"
+        except NoSuchElementException:
+            geo_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[1]/div/button"
         geo = self.browser.find_element_by_xpath(geo_filter_xpath)
-        webdriver.ActionChains(self.browser).move_to_element(geo).click(geo).perform()
+        self.browser.execute_script("arguments[0].click();", geo)
         time.sleep(2)
 
         # вводим название страны
-        country_filter_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/input"
+        try:
+            country_filter_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/input"
+        except NoSuchElementException:
+            country_filter_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/input"
         self.browser.find_element_by_xpath(country_filter_input_xpath).send_keys('Ukraine')
         time.sleep(1)
 
         # выбираем локаль Украина
-        needed_company_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
+        try:
+            needed_company_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
+        except NoSuchElementException:
+            needed_company_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
         get_country = self.browser.find_element_by_xpath(needed_company_link_xpath)
         webdriver.ActionChains(self.browser).move_to_element(get_country).click(get_country).perform()
 
     def click_to_industry(self):  # жмем на фильтр по сфере деятельности
-        industry_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[1]/div/button"
+        try:
+            industry_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[1]/div/button"
+        except NoSuchElementException:
+            industry_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[1]/div/button"
         ind = self.browser.find_element_by_xpath(industry_filter_xpath)
         webdriver.ActionChains(self.browser).move_to_element(ind).click(ind).perform()
 
     def input_industry(self, industries):  # вводим название сферы деятельности
         for i in industries:
-            industry_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/input"
+            try:
+                industry_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/input"
+            except NoSuchElementException:
+                industry_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/input"
             self.browser.find_element_by_xpath(industry_input_xpath).send_keys(f'{i}')
             time.sleep(1)
 
             # выбираем сферу деятельности
-            industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li[1]/button"
+            try:
+                industry_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li[1]/button"
+            except NoSuchElementException:
+                industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li[1]/button"
             industry_x = self.browser.find_element_by_xpath(industry_link_xpath)
             webdriver.ActionChains(self.browser).move_to_element(industry_x).click(industry_x).perform()
 
     def click_to_functions(self):  # жмем на фильтр по должности
-        function_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[1]/div/button"
+        try:
+            function_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[1]/div/button"
+        except NoSuchElementException:
+            function_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[1]/div/button"
         func = self.browser.find_element_by_xpath(function_filter_xpath)
         webdriver.ActionChains(self.browser).move_to_element(func).click(func).perform()
 
     def input_functions(self, functions):  # вводим название должностей
         for i in functions:
-            functions_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/input"
+            try:
+                functions_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/input"
+            except NoSuchElementException:
+                functions_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/input"
             self.browser.find_element_by_xpath(functions_input_xpath).send_keys(f'{i}')
             time.sleep(1)
 
             # выбираем должности
-            industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
+            try:
+                industry_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
+            except NoSuchElementException:
+                industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
             func_x = self.browser.find_element_by_xpath(industry_link_xpath)
             webdriver.ActionChains(self.browser).move_to_element(func_x).click(func_x).perform()
 
     def search(self):  # жмем на кнопку 'поиск'
-        search_btn_xpath = "/html/body/div[8]/div/div/div[1]/div[2]/button"
+        try:
+            search_btn_xpath = "/html/body/div[3]/div/div/div[1]/div[2]/button"
+        except NoSuchElementException:
+            search_btn_xpath = "/html/body/div[8]/div/div/div[1]/div[2]/button"
         search_x = self.browser.find_element_by_xpath(search_btn_xpath)
         webdriver.ActionChains(self.browser).move_to_element(search_x).click(search_x).perform()
 
         time.sleep(2)
 
     def get_industry_list(self):  # собирает список всех сфер деятельности для выбора в bot
-        industries = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li/button')]
+        try:
+            industries = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li/button')]
+        except NoSuchElementException:
+            industries = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li/button')]
         return industries
 
     def get_functions_list(self):  # собирает список всех должностей для выбора в bot
-        functions = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li/button')]
+        try:
+            functions = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li/button')]
+        except NoSuchElementException:
+            functions = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li/button')]
         return functions
 
     def get_search_pages(self):  # парсим количество страниц после поиска
@@ -146,15 +182,20 @@ class Scraper:
 
         # вводим тему
         try:
-            input_subject_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/input'
+            try:
+                input_subject_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/input'
+            except NoSuchElementException:
+                input_subject_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/input'
             self.browser.find_element_by_xpath(input_subject_xpath).send_keys(message.subject)
         except NoSuchElementException:
             print('тема уже есть')
 
         # вводим сообщение
-        input_body_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
+        try:
+            input_body_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
+        except NoSuchElementException:
+            input_body_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
         self.browser.find_element_by_xpath(input_body_xpath).send_keys(message.body)
-
         time.sleep(1)
         if not DEBUG:  # если DEBUG==False отправляем сообщения
             send_button_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/section[2]/span/button'
@@ -165,7 +206,10 @@ class Scraper:
             close_message = self.browser.find_element_by_xpath('/html/body/div[4]/section/header/button[2]')
             self.browser.execute_script("(arguments[0]).click();", close_message)
             time.sleep(2)
-            close = self.browser.find_element_by_xpath('/html/body/div[10]/div/div/div[3]/button[2]')
+            try:
+                close = self.browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/button[2]')
+            except NoSuchElementException:
+                close = self.browser.find_element_by_xpath('/html/body/div[10]/div/div/div[3]/button[2]')
             self.browser.execute_script("(arguments[0]).click();", close)
 
     def next_page(self):
@@ -195,7 +239,10 @@ class Scraper:
         self.browser.execute_script("(arguments[0]).click();", show)
 
     def click_to_hide_all_info(self):
-        hide_xpath = '/html/body/div[8]/div/div/button'
+        try:
+            hide_xpath = '/html/body/div[3]/div/div/button'
+        except NoSuchElementException:
+            hide_xpath = '/html/body/div[8]/div/div/button'
         hide = self.browser.find_element_by_xpath(hide_xpath)
         self.browser.execute_script("(arguments[0]).click();", hide)
 
@@ -206,20 +253,11 @@ class Scraper:
 
     def check_email(self):
         try:
-            email_xpath = '/html/body/div[8]/div/div/div[2]/div/section[2]/div/div[1]/a'
+            try:
+                email_xpath = '/html/body/div[3]/div/div/div[2]/div/section[2]/div/div[1]/a'
+            except NoSuchElementException:
+                email_xpath = '/html/body/div[8]/div/div/div[2]/div/section[2]/div/div[1]/a'
             email_element = self.browser.find_element_by_xpath(email_xpath)
             return email_element.text
         except NoSuchElementException:
             return None
-
-
-if __name__ == '__main__':
-    scrapper = Scraper()
-    scrapper.login('manager@dedic.ru', 'Det]twod4')
-    time.sleep(5)
-    scrapper.search_in()
-    time.sleep(5)
-    scrapper.search()
-
-    scrapper.browser.quit()
-    scrapper.browser.close()
