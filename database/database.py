@@ -78,3 +78,8 @@ def create_message(**kwargs):
         obj = Message(**kwargs)
         session.add(obj)
     session.commit()
+
+
+def get_customer_with_email():
+    all = session.query.filter_by(Customer.email.isnot(None))
+    return all

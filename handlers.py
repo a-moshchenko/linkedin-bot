@@ -1,6 +1,7 @@
 import os
 import time
 import hashlib
+import logging
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -25,6 +26,8 @@ from database import (create_user,
                       get_all,
                       create_customer)
 from scraper import Scraper
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', )
 
 
 filter = ''
@@ -204,28 +207,28 @@ async def start_send(msg: types.Message):
                     time.sleep(5)
                     customer = scrapper.get_customer()
                     await msg.answer(f"Заходим на страницу {customer}")
-                    time.sleep(2)
+                    time.sleep(5)
                     scrapper.click_to_show_all_info()
-                    time.sleep(3)
+                    time.sleep(5)
                     email = scrapper.check_email()
                     time.sleep(5)
                     scrapper.click_to_hide_all_info()
                     time.sleep(5)
                     scrapper.send_message()
                     await msg.answer("Сообщение отправлено")
-                    time.sleep(2)
+                    time.sleep(5)
                     create_customer(Customer, name=customer, url=url, email=email)
                     time.sleep(5)
                     scrapper.go_back()
                     time.sleep(5)
                     scrapper.scroll()
                 else:
-                    print("Пользователь сообщение получил")
+                    logging.info("Пользователь сообщение получил")
                     time.sleep(5)
                     scrapper.scroll()
             scrapper.next_page()
     except Exception as e:
-        print(e)
+        logging.warning(e)
         scrapper.browser.quit()
 
 
