@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 absolute_path = os.path.abspath('./database/linkedin_bot.db')
 engine = create_engine(f'sqlite:////{absolute_path}',
-                       echo=True)
+                       echo=False)
 
 
 Session = sessionmaker(bind=engine)
@@ -20,16 +20,16 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(50))
-    login = Column(String(100))
-    password = Column(String(100))
+    username = Column(String)
+    login = Column(String)
+    password = Column(String)
 
 
 class Message(Base):
     __tablename__ = 'message'
 
     id = Column(Integer, primary_key=True)
-    subject = Column(String(100))
+    subject = Column(String)
     body = Column(Text)
 
 
@@ -37,8 +37,9 @@ class Customer(Base):
     __tablename__ = 'customer'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    url = Column(String(255))
+    name = Column(String)
+    url = Column(String)
+    email = Column(String)
 
 
 Base.metadata.create_all(engine)

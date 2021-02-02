@@ -1,5 +1,6 @@
 from selenium import webdriver
 import time
+import json
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -7,7 +8,7 @@ from config import DEBUG
 
 from main import bot
 
-from database import Message, get_all, check_in_db, Customer
+from database import Message, get_all, Customer, create_customer
 
 
 async def send_message_to_bot(msg):
@@ -40,13 +41,13 @@ class Scraper:
         elementID.send_keys(password)
 
         elementID.submit()
-        time.sleep(25)
+        time.sleep(10)
 
     def search_in(self):  # входим в поиск по фильтру и устанавливаем фильтр местоположения Ukraine
         self.browser.get("https://www.linkedin.com/sales/search/people")
         time.sleep(5)
         self.browser.find_element_by_xpath('/html/body/div[5]/header/div/div[3]/section/div/div/div[1]/div/div/div[1]/a').click()
-        time.sleep(1)
+        time.sleep(2)
 
         # жмем на фильтр по местоположению
         geo_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[1]/div/button"
@@ -119,28 +120,23 @@ class Scraper:
         except NoSuchElementException:
             return False
 
-    def get_customer(self, num):
-        customer = self.browser.find_element_by_xpath(f'/html/body/main/div[1]/div/section/div[1]/div/div[1]/ol/li[{num}]/div[2]/div/div/div/article/section[1]/div[1]/div/dl/dt/a')
-        return customer.text, customer.get_attribute('href')
+    def get_customer(self):
+        customer = self.browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[1]/div[1]/div/dl/dt/span')
+        return customer.text
 
-    def send_message(self, num):
-        xpath_three_dots = f'/html/body/main/div[1]/div/section/div[1]/div/div[1]/ol/li[{num}]/div[2]/div/div/div/article/section[1]/div[2]/ul/li/div/div[2]/div/div[1]/button'
-        three_dots = self.browser.find_element_by_xpath(xpath_three_dots)
-        self.browser.execute_script("$(arguments[0]).click();", three_dots)
-        time.sleep(5)
-
-        # открывает окно ввода сообщения
-        open_message_window_xpath = f'/html/body/main/div[1]/div/section/div[1]/div/div[1]/ol/li[{num}]/div[2]/div/div/div/article/section[1]/div[2]/ul/li/div/div[2]/div/div[1]/div/div/ul/li[4]'
-        open_window = self.browser.find_element_by_xpath(open_message_window_xpath)
-        open_window.click()
-        # self.browser.execute_script("$(arguments[0]).click();", open_window)
+    def send_message(self):  # отправка сообщения
+        open_message = '/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button'  # открываем окно ввода сообщения
+        self.browser.find_element_by_xpath(open_message).click()
         time.sleep(5)
 
         message = get_all(Message)[0]  # достаем сообщение из БД
 
         # вводим тему
-        input_subject_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/input'
-        self.browser.find_element_by_xpath(input_subject_xpath).send_keys(message.subject)
+        try:
+            input_subject_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/input'
+            self.browser.find_element_by_xpath(input_subject_xpath).send_keys(message.subject)
+        except NoSuchElementException:
+            print('тема уже есть')
 
         # вводим сообщение
         input_body_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
@@ -157,10 +153,47 @@ class Scraper:
             time.sleep(2)
             self.browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/button[2]').click()
 
-    def next_page():
+    def next_page(self):
         # нажимаем next для перехода на следующую страницу
-        scraper.browser.find_element_by_xpath('/html/body/main/div[1]/div/section/div[2]/nav/button[2]').click()
+        self.scraper.browser.find_element_by_xpath('/html/body/main/div[1]/div/section/div[2]/nav/button[2]').click()
 
-    def __del__(self):
-        self.browser.close()
-        self.browser.quit()
+    def open_user_page(self, num):  # переходит на страницу пользователя
+        username_link_xpath = f'/html/body/main/div[1]/div/section/div[1]/div/div[1]/ol/li[{num}]/div[2]/div/div/div/article/section[1]/div[1]/div/dl/dt/a'
+        window = self.browser.find_element_by_xpath(username_link_xpath)
+        time.sleep(2)
+        self.browser.execute_script("$(arguments[0]).click();", window)
+
+    def go_back(self):  # возвращает на предыдущую страницу
+        self.browser.back()
+
+    def scroll(self):  # прокручивает всю страницу, чтобы загрузить все элементы
+        current_scroll_position, new_height = 0, 1
+        while current_scroll_position <= new_height:  # прокрутка в конец страницы
+            current_scroll_position += 150
+            self.browser.execute_script("window.scrollTo(0, {});".format(current_scroll_position))
+            new_height = self.browser.execute_script("return document.body.scrollHeight")
+
+    def click_to_show_all_info(self):
+        show_xpath = '/html/body/main/div[1]/div[2]/div/div[2]/div[3]/dl/dd[2]/button'
+        self.browser.find_element_by_xpath(show_xpath).click()
+
+    def click_to_hide_all_info(self):
+        hide_xpath = '/html/body/div[3]/div/div/button'
+        self.browser.find_element_by_xpath(hide_xpath).click()
+
+    def get_profile_url(self, num):
+        url_xpath = f'/html/body/main/div[1]/div/section/div[1]/div/div[1]/ol/li[{num}]/div[2]/div/div/div/article/section[1]/div[1]/div/dl/dt/a'
+        url = self.browser.find_element_by_xpath(url_xpath).get_attribute('href')
+        return url
+
+    def check_email(self):
+        try:
+            email_xpath = '/html/body/div[3]/div/div/div[2]/div/section[2]/div/div[1]/a'
+            email_element = self.browser.find_element_by_xpath(email_xpath)
+            return email_element.text
+        except NoSuchElementException:
+            return None
+
+
+if __name__ == '__main__':
+    pass
