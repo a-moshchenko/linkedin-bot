@@ -197,11 +197,6 @@ async def start_send(msg: types.Message):
         time.sleep(3)
         for i in range(n):
             for j in range(1, 26):
-                global stop
-                if stop:
-                    await msg.answer("Останавливаем рассылку")
-                    scrapper.browser.quit()
-                    break
                 time.sleep(5)
                 url = scrapper.get_profile_url(j).split('?')[0]
                 if url not in check_list:

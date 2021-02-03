@@ -60,13 +60,15 @@ class Scraper:
         except NoSuchElementException:
             geo_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[1]/div/button"
         geo = self.browser.find_element_by_xpath(geo_filter_xpath)
-        self.browser.execute_script("arguments[0].click();", geo)
+        time.sleep(1)
+        webdriver.ActionChains(self.browser).move_to_element(geo).click(geo).perform()
         time.sleep(2)
 
         # вводим название страны
         try:
             country_filter_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/input"
         except NoSuchElementException:
+
             country_filter_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/input"
         self.browser.find_element_by_xpath(country_filter_input_xpath).send_keys('Ukraine')
         time.sleep(1)
@@ -75,6 +77,7 @@ class Scraper:
         try:
             needed_company_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
         except NoSuchElementException:
+
             needed_company_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
         get_country = self.browser.find_element_by_xpath(needed_company_link_xpath)
         webdriver.ActionChains(self.browser).move_to_element(get_country).click(get_country).perform()
@@ -83,6 +86,7 @@ class Scraper:
         try:
             industry_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[1]/div/button"
         except NoSuchElementException:
+
             industry_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[1]/div/button"
         ind = self.browser.find_element_by_xpath(industry_filter_xpath)
         webdriver.ActionChains(self.browser).move_to_element(ind).click(ind).perform()
@@ -92,6 +96,7 @@ class Scraper:
             try:
                 industry_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/input"
             except NoSuchElementException:
+
                 industry_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/input"
             self.browser.find_element_by_xpath(industry_input_xpath).send_keys(f'{i}')
             time.sleep(1)
@@ -100,6 +105,7 @@ class Scraper:
             try:
                 industry_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li[1]/button"
             except NoSuchElementException:
+
                 industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li[1]/button"
             industry_x = self.browser.find_element_by_xpath(industry_link_xpath)
             webdriver.ActionChains(self.browser).move_to_element(industry_x).click(industry_x).perform()
@@ -108,6 +114,7 @@ class Scraper:
         try:
             function_filter_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[1]/div/button"
         except NoSuchElementException:
+
             function_filter_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[1]/div/button"
         func = self.browser.find_element_by_xpath(function_filter_xpath)
         webdriver.ActionChains(self.browser).move_to_element(func).click(func).perform()
@@ -117,6 +124,7 @@ class Scraper:
             try:
                 functions_input_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/input"
             except NoSuchElementException:
+
                 functions_input_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/input"
             self.browser.find_element_by_xpath(functions_input_xpath).send_keys(f'{i}')
             time.sleep(1)
@@ -125,6 +133,7 @@ class Scraper:
             try:
                 industry_link_xpath = "/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
             except NoSuchElementException:
+
                 industry_link_xpath = "/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[4]/div/div/div[2]/ol/li[1]/button"
             func_x = self.browser.find_element_by_xpath(industry_link_xpath)
             webdriver.ActionChains(self.browser).move_to_element(func_x).click(func_x).perform()
@@ -133,6 +142,7 @@ class Scraper:
         try:
             search_btn_xpath = "/html/body/div[3]/div/div/div[1]/div[2]/button"
         except NoSuchElementException:
+
             search_btn_xpath = "/html/body/div[8]/div/div/div[1]/div[2]/button"
         search_x = self.browser.find_element_by_xpath(search_btn_xpath)
         webdriver.ActionChains(self.browser).move_to_element(search_x).click(search_x).perform()
@@ -143,6 +153,7 @@ class Scraper:
         try:
             industries = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li/button')]
         except NoSuchElementException:
+
             industries = [i.get_attribute('title').split('  ')[0] for i in self.browser.find_elements_by_xpath('/html/body/div[8]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[6]/div/div/div[2]/ol/li/button')]
         return industries
 
@@ -183,18 +194,19 @@ class Scraper:
         # вводим тему
         try:
             try:
-                input_subject_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/input'
-            except NoSuchElementException:
                 input_subject_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/input'
+            except NoSuchElementException:
+                input_subject_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/input'
             self.browser.find_element_by_xpath(input_subject_xpath).send_keys(message.subject)
         except NoSuchElementException:
             print('тема уже есть')
 
         # вводим сообщение
         try:
-            input_body_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
-        except NoSuchElementException:
             input_body_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
+        except NoSuchElementException:
+
+            input_body_xpath = '/html/body/div[4]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'
         self.browser.find_element_by_xpath(input_body_xpath).send_keys(message.body)
         time.sleep(1)
         if not DEBUG:  # если DEBUG==False отправляем сообщения
@@ -203,12 +215,17 @@ class Scraper:
             print('message.send')
         elif DEBUG:  # если DEBUG==True закрываем окно ввода
             time.sleep(2)
-            close_message = self.browser.find_element_by_xpath('/html/body/div[4]/section/header/button[2]')
+            try:
+                close_message = self.browser.find_element_by_xpath('/html/body/div[4]/section/header/button[2]')
+            except NoSuchElementException:
+
+                close_message = self.browser.find_element_by_xpath('/html/body/div[6]/section/header/button[2]')
             self.browser.execute_script("(arguments[0]).click();", close_message)
             time.sleep(2)
             try:
                 close = self.browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/button[2]')
             except NoSuchElementException:
+
                 close = self.browser.find_element_by_xpath('/html/body/div[10]/div/div/div[3]/button[2]')
             self.browser.execute_script("(arguments[0]).click();", close)
 
@@ -233,7 +250,12 @@ class Scraper:
             new_height = self.browser.execute_script("return document.body.scrollHeight")
 
     def click_to_show_all_info(self):
-        show_xpath = '/html/body/main/div[1]/div[2]/div/div[2]/div[3]/dl/dd[2]/button'
+        try:
+            show_xpath = '/html/body/main/div[1]/div[2]/div/div[2]/div[3]/dl/dd[2]/button'
+        except NoSuchElementException:
+
+            show_xpath = '/html/body/main/div[1]/div[2]/div/div[2]/div[3]/dl/dd[4]/button'
+
         time.sleep(1)
         show = self.browser.find_element_by_xpath(show_xpath)
         self.browser.execute_script("(arguments[0]).click();", show)
@@ -256,6 +278,7 @@ class Scraper:
             try:
                 email_xpath = '/html/body/div[3]/div/div/div[2]/div/section[2]/div/div[1]/a'
             except NoSuchElementException:
+
                 email_xpath = '/html/body/div[8]/div/div/div[2]/div/section[2]/div/div[1]/a'
             email_element = self.browser.find_element_by_xpath(email_xpath)
             return email_element.text
