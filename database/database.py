@@ -83,3 +83,6 @@ def create_message(**kwargs):
 def get_customer_with_email():
     all = session.query.filter_by(Customer.email.isnot(None))
     return all
+
+
+create_message(subject='Тема сообщения', body='Сообщение')

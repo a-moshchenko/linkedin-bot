@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import hashlib
 import logging
@@ -25,7 +26,7 @@ from database import (create_user,
                       create_message,
                       get_all,
                       create_customer)
-from scraper import Scraper
+from scraper import Scraper, NoSuchElementException
 
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', )
 
@@ -99,6 +100,7 @@ async def save_login_and_password(msg: types.Message, state: FSMContext):
 
 @dp.message_handler(Text(equals=["Поехали", "Ok"]))
 async def filter_by(msg: types.Message):
+    await msg.answer("Подождите")
     global filter
     global filter_list
     if filter == 'industry':
@@ -189,12 +191,13 @@ async def view_message(msg: types.Message):
 
 @dp.message_handler(Text(equals="Начать раcсылку"))
 async def start_send(msg: types.Message):
-    await msg.answer("Рассылка началась", reply_markup=stop_button)
     global scrapper
+    await msg.answer("Отправка Началась!!!")
     try:
         check_list = [i.url for i in get_all(Customer)]
         n = scrapper.get_search_pages()
         time.sleep(3)
+        await msg.answer("Подождите пока отправка закончится!!!")
         for i in range(n):
             for j in range(1, 26):
                 time.sleep(5)
@@ -206,18 +209,18 @@ async def start_send(msg: types.Message):
                     time.sleep(5)
                     customer = scrapper.get_customer()
                     await msg.answer(f"Заходим на страницу {customer}")
-                    time.sleep(5)
+                    time.sleep(3)
                     scrapper.click_to_show_all_info()
-                    time.sleep(5)
+                    time.sleep(3)
                     email = scrapper.check_email()
                     time.sleep(5)
                     scrapper.click_to_hide_all_info()
                     time.sleep(5)
                     scrapper.send_message()
                     await msg.answer("Сообщение отправлено")
-                    time.sleep(5)
+                    time.sleep(3)
                     create_customer(Customer, name=customer, url=url, email=email)
-                    time.sleep(5)
+                    time.sleep(2)
                     scrapper.go_back()
                     time.sleep(5)
                     scrapper.scroll()
@@ -226,15 +229,11 @@ async def start_send(msg: types.Message):
                     time.sleep(5)
                     scrapper.scroll()
             scrapper.next_page()
-    except KeyboardInterrupt as e:
+    except NoSuchElementException as e:
         logging.warning(e)
-        scrapper.browser.quit()
+    scrapper.browser.quit()
+    await msg.answer("Отправка закончилась!!! для запуска введите /start")
 
-
-@dp.message_handler(Text(equals="Отмена"))
-async def stop_send(msg: types.Message):
-    exit()
-    await msg.answer("Рассылка отменена", reply_markup=start_button)
 
 
 @dp.message_handler()
