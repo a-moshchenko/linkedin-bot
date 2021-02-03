@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-absolute_path = os.path.abspath('./database/linkedin_bot.db')
+absolute_path = os.path.abspath('./linkedin_bot.db')
 engine = create_engine(f'sqlite:////{absolute_path}',
                        echo=False)
 

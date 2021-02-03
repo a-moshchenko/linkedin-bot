@@ -8,7 +8,7 @@ from config import DEBUG
 
 from main import bot
 
-from database import Message, get_all, Customer, create_customer
+from database import Message, get_all
 
 
 async def send_message_to_bot(msg):
@@ -166,7 +166,7 @@ class Scraper:
             self.browser.find_element_by_xpath(input_subject_xpath).send_keys(message.subject)
         except NoSuchElementException:
             print('тема уже есть')
-        time.sleep(1)
+        time.sleep(2)
 
         # вводим сообщение
         input_body_xpath = '/html/body/div[6]/section/div[2]/section/div[2]/form[1]/section[1]/textarea'

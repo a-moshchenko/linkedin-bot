@@ -1,16 +1,27 @@
-1 Копируем репозиторий
-git clone https://github.com/dedicated-rpa/linkedin-bot.git
-переходим в ветку fix_by_dev5044
+# LinkedIn-bot
 
-2 В файле config.py меняем значение DEBUG на False
-(при значении True сообщение не отправляется, а закрывается окно. И драйвер без режима headless)
+*Проверялся на версии python 3.7.5, запускать лучше с 5044 - там уствновлен менеджер версий*
 
-3 Устанавливаем зависимости  pip3 install -r requirements.txt
+Переключаемся на версию python3.7.5
+`pyenv local 3.7.5`
 
-4 Запускаем бота  python3 main.py
+Далее комманды по порядку
+`python -m pip install virtualenv`
 
-5 ищем бота в Телеграмм ('@dev_5044_test_bot')
+`python -m venv env`
 
-6 Бот собирает email если есть, можно выгрузить в csv коммандой python3 get_csv.py
+`. env/bin/activate`
 
-Обязательно при первом запуске не пропускаем пункт изменить сообщение
+`pip install -r requirements.txt`
+
+Создаем БД
+`python database/database.py`
+
+***В файле config.py меняем значение DEBUG на False***
+***в режиме DEBUG соообщения не отправляются и браузер работает без --headless***
+
+Запуск Бота
+`python main.py`
+
+Для выгрузки контактов у которых есть email:
+`python get_csv.py`

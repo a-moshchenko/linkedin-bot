@@ -192,7 +192,7 @@ async def view_message(msg: types.Message):
 @dp.message_handler(Text(equals="Начать раcсылку"))
 async def start_send(msg: types.Message):
     global scrapper
-    await msg.answer("Отправка Началась!!!")
+    await msg.answer("Отправка Началась!!!", reply_markup=ReplyKeyboardRemove())
     try:
         check_list = [i.url for i in get_all(Customer)]
         n = scrapper.get_search_pages()
@@ -231,9 +231,9 @@ async def start_send(msg: types.Message):
             scrapper.next_page()
     except NoSuchElementException as e:
         logging.warning(e)
+        await msg.answer("Отправка закончилась с ошибкой!!!"
     scrapper.browser.quit()
     await msg.answer("Отправка закончилась!!! для запуска введите /start")
-
 
 
 @dp.message_handler()
