@@ -231,7 +231,7 @@ async def start_send(msg: types.Message):
             scrapper.next_page()
     except NoSuchElementException as e:
         logging.warning(e)
-        await msg.answer("Отправка закончилась с ошибкой!!!"
+        await msg.answer("Отправка закончилась с ошибкой!!!")
     scrapper.browser.quit()
     await msg.answer("Отправка закончилась!!! для запуска введите /start")
 
