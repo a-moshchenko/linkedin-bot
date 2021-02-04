@@ -1,6 +1,13 @@
 # LinkedIn-bot
 
-*Проверялся на версии python 3.7.5, запускать лучше с 5044 - там уствновлен менеджер версий*
+*Проверялся на версии python 3.7.5*
+
+Устанавливаем pyenv
+`https://khashtamov.com/ru/pyenv-python/`
+
+Устанавливаем python 3.7.5
+
+`pyenv install 3.7.5`
 
 Переключаемся на версию python3.7.5
 `pyenv local 3.7.5`
