@@ -3,4 +3,6 @@ import os
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = '1583252193:AAExrfW4wVkUdp5Zi_jK9D8ZTiUl-puBDvk'
+
+DEBUG = True

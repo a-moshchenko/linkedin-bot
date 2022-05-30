@@ -6,8 +6,6 @@ class LogInLinkedinStates(StatesGroup):
     write_password = State()
 
 
-class OneCompanyProfileStates(StatesGroup):
-    paste_one_company_profile = State()
-    write_subject_message = State()
-    write_text_message = State()
-    confirm_or_cancel = State()
+class MessageStates(StatesGroup):
+    write_subject = State()
+    write_body = State()

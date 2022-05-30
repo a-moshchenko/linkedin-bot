@@ -1,25 +1,62 @@
+import os
+import sys
+import time
+import hashlib
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import ReplyKeyboardRemove
 
-from main import dp
-from keyboards import *
-from FSM import *
-from database import *
-from search_users import check_users_from_sales_navigator_form
+from main import dp, bot
+from keyboards import (start_button,
+                       go_button,
+                       filter_button,
+                       get_button_list,
+                       message_button,
+                       done_button,
+                       go_to_message_button,
+                       stop_button)
+from FSM import LogInLinkedinStates, MessageStates
+from database import (create_user,
+                      User,
+                      Message,
+                      Customer,
+                      create_message,
+                      get_all,
+                      create_customer)
+from scraper import Scraper, NoSuchElementException
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', )
+
+
+filter = ''
+filter_list = []
+scrapper = None
+stop = False
+
+
+def get_hash(password):
+    password_salt = os.urandom(32).hex()
+    hash = hashlib.sha512()
+    hash.update(('%s%s' % (password_salt, password)).encode('utf-8'))
+    return hash.hexdigest()
 
 
 @dp.message_handler(commands=["start"])
 async def start_bot(msg: types.Message):
+    global scrapper
+    scrapper = Scraper()
     await msg.answer("Привет! Я LinkedIn Bot! Буду помогать с рассылкой сообщений. ",
                      reply_markup=start_button)
 
 
 # вводим логин
-@dp.message_handler(Text(equals="Начать"))
+@dp.message_handler(Text(equals=["Начать", "Отмена"]))
 async def write_login(msg: types.Message):
-    await msg.answer("Введите ваш логин на LinkedIn:", reply_markup=ReplyKeyboardRemove())
+    await msg.answer("Введите ваш логин на LinkedIn:",
+                     reply_markup=ReplyKeyboardRemove())
 
     await LogInLinkedinStates.write_login.set()  # FSM.py
 
@@ -38,108 +75,170 @@ async def write_password(msg: types.Message, state: FSMContext):
 # сохраняем логин и пароль
 @dp.message_handler(state=LogInLinkedinStates.write_password)
 async def save_login_and_password(msg: types.Message, state: FSMContext):
+    await msg.answer("Подождите!! Идет авторизация")
     await state.update_data(
         {"password": msg.text}
     )
-
     login_details = await state.get_data()
 
-    await save_login_details_in_db(login_details["login"], login_details["password"])
+    user = msg.from_user
 
     await state.finish()
 
-    await msg.answer("Отлично! Вот данные, которые вы ввели:\n"
-                     f"Логин: {login_details['login']}\n"
-                     f"Пароль: {login_details['password']}\n"
-                     "Вы хотите вставить профиль только одной компании или отправить файлом целый список? "
-                     "В случае если данные введены не верно, их можно изменить.",
-                     reply_markup=one_company_or_file)
+    scrapper.login(login_details["login"], login_details["password"])
+    time.sleep(5)
+    scrapper.search_in()
+
+    create_user(User, id=user['id'], username=user['username'],
+                login=login_details["login"],
+                password=get_hash(login_details["password"]))
+    await msg.answer("Отлично! Вход выполнен, можем продолжать! "
+                     "Вы можете выбрать фильтры сферы деятельности "
+                     "и должности людей которым будем делать рассылку",
+                     reply_markup=go_button)
 
 
-# при необходимости изменить данные для входа
-@dp.message_handler(Text(equals="Изменить данные"))
-async def change_login_details(msg: types.Message):
-    await clear_all_data_in_login_details()  # очищаем таблицу с данными для входа
+@dp.message_handler(Text(equals=["Поехали", "Ok"]))
+async def filter_by(msg: types.Message):
+    await msg.answer("Подождите")
+    global filter
+    global filter_list
+    if filter == 'industry':
+        scrapper.input_industry(set(filter_list))
+    elif filter == 'functions':
+        scrapper.input_functions(set(filter_list))
+    filter = ''
+    filter_list = []
+    await msg.answer("Выберите", reply_markup=filter_button)
 
-    await msg.answer("Данные очищены. Нажмите на кнопку для продолжения",
-                     reply_markup=start_button)
+
+# выбираем сферу деятельности
+@dp.message_handler(Text(equals="Сфера деятельности"))
+async def filter_by_industry(msg: types.Message, state: FSMContext):
+    global filter
+    filter = 'industry'
+    scrapper.click_to_industry()
+    time.sleep(1)
+    lst = scrapper.get_industry_list()
+    await msg.answer("Выберите (можно несколько) и нажмите 'OK'", reply_markup=get_button_list(lst))
 
 
-# !!!!!!!! НАЧАЛО СЦЕНАРИЯ С РАССЫЛКОЙ ДЛЯ ОДНОЙ КОМПАНИИ !!!!!!!!
+# выбираем должность
+@dp.message_handler(Text(equals="Должность"))
+async def filter_by_function(msg: types.Message):
+    global filter
+    filter = 'functions'
+    scrapper.click_to_functions()
+    time.sleep(1)
+    lst = scrapper.get_functions_list()
+    await msg.answer("Выберите (можно несколько) и нажмите 'OK'", reply_markup=get_button_list(lst))
 
-# если нужно вставить профиль одной компании
-@dp.message_handler(Text(equals="Одну компанию"))
-async def paste_one_company_profile_link(msg: types.Message):
-    await msg.answer("Вставьте ссылку на профиль комнании на LinkedIn.",
+
+# поиск по выбраным критериям
+@dp.message_handler(Text(equals="Поиск"))
+async def done(msg: types.Message):
+    scrapper.search()
+    await msg.answer("Поиск закончен", reply_markup=go_to_message_button)
+
+
+# меню сообщения
+@dp.message_handler(Text(equals=["К сообщению", "Готово"]))
+async def message_menu(msg: types.Message):
+    await msg.answer("Выберите", reply_markup=message_button)
+
+
+# вводим тему
+@dp.message_handler(Text(equals="Изменить сообщение"))
+async def write_subject(msg: types.Message):
+    await msg.answer("Введите тему сообщения",
                      reply_markup=ReplyKeyboardRemove())
 
-    await OneCompanyProfileStates.paste_one_company_profile.set()
+    await MessageStates.write_subject.set()  # FSM.py
 
 
-# получаем тему(заголовок) сообщения
-@dp.message_handler(state=OneCompanyProfileStates.paste_one_company_profile)
-async def write_subject_message(msg: types.Message, state: FSMContext):
+# вводим текст
+@dp.message_handler(state=MessageStates.write_subject)
+async def write_body(msg: types.Message, state: FSMContext):
+    await msg.answer("Теперь введите сообщение")
+
     await state.update_data(
-        {"profile_link": msg.text}
+        {"subject": msg.text}
     )
-
-    await msg.answer("Введите тему (заголовок) вашего сообщения.")
-
-    await OneCompanyProfileStates.write_subject_message.set()
+    await MessageStates.write_body.set()
 
 
-# получаем сам текст сообщения
-@dp.message_handler(state=OneCompanyProfileStates.write_subject_message)
-async def write_text_message(msg: types.Message, state: FSMContext):
+# сохраняем сообщение
+@dp.message_handler(state=MessageStates.write_body)
+async def save_message(msg: types.Message, state: FSMContext):
     await state.update_data(
-        {"subject_msg": msg.text}
+        {"body": msg.text}
     )
-
-    await msg.answer("Введите текст вашего сообщения.")
-
-    await OneCompanyProfileStates.write_text_message.set()
-
-
-# спрашиваем подтверждение на рассылку
-@dp.message_handler(state=OneCompanyProfileStates.write_text_message)
-async def confirm_mailing(msg: types.Message, state: FSMContext):
-    await state.update_data(
-        {"text_msg": msg.text}
-    )
-
-    mailing_data = await state.get_data()
-
-    await msg.answer("Вот данные, которые вы ввели.\n"
-                     f"<b>Профиль компании:</b> {mailing_data['profile_link']}\n"
-                     f"<b>Тема сообщения:</b> {mailing_data['subject_msg']}\n"
-                     f"<b>Текст:</b>\n{mailing_data['text_msg']}\n"
-                     "Подтвердите, либо отмените рассылку.",
-                     reply_markup=confirm_or_cancel_mailing)
-
-    await OneCompanyProfileStates.confirm_or_cancel.set()
-
-
-# отмена рассылки
-@dp.message_handler(Text(equals="Отменить"), state=OneCompanyProfileStates.confirm_or_cancel)
-async def cancel_mailing(msg: types.Message, state: FSMContext):
-    await clear_all_data_in_login_details()  # очищаем таблицу с данными для входа
-
-    await msg.answer("Рассылка отменена. Нажмите кнопку, чтобы начать новую.",
-                     reply_markup=start_button)
+    message = await state.get_data()
 
     await state.finish()
+    create_message(subject=message['subject'], body=message['body'])
+    await msg.answer("Сообщение сохранено!!!", reply_markup=done_button)
 
 
-# если рассылка подтверждена
-@dp.message_handler(Text(equals="Подтвердить"), state=OneCompanyProfileStates.confirm_or_cancel)
-async def confirm_mailing(msg: types.Message, state: FSMContext):
-    message_data = await state.get_data()
+@dp.message_handler(Text(equals="Посмотреть сообщение"))
+async def view_message(msg: types.Message):
+    message = get_all(Message)[0]
+    await msg.answer("subject:"
+                     f"{message.subject}")
+    await msg.answer("body:"
+                     f"{message.body}", reply_markup=done_button)
 
-    await write_message_data_in_table(message_data['profile_link'], message_data['subject_msg'],
-                                      message_data['text_msg'])
 
-    await msg.answer("Рассылка подтверждена и начинается.")
+@dp.message_handler(Text(equals="Начать раcсылку"))
+async def start_send(msg: types.Message):
+    global scrapper
+    await msg.answer("Отправка Началась!!!", reply_markup=ReplyKeyboardRemove())
+    try:
+        check_list = [i.url for i in get_all(Customer)]
+        n = scrapper.get_search_pages()
+        time.sleep(3)
+        await msg.answer("Подождите пока отправка закончится!!!")
+        for i in range(n):
+            for j in range(1, 26):
+                time.sleep(5)
+                url = scrapper.get_profile_url(j).split('?')[0]
+                if url not in check_list:
+                    check_list.append(url)
+                    time.sleep(5)
+                    scrapper.open_user_page(j)
+                    time.sleep(5)
+                    customer = scrapper.get_customer()
+                    await msg.answer(f"Заходим на страницу {customer}")
+                    time.sleep(3)
+                    scrapper.click_to_show_all_info()
+                    time.sleep(3)
+                    email = scrapper.check_email()
+                    time.sleep(5)
+                    scrapper.click_to_hide_all_info()
+                    time.sleep(5)
+                    scrapper.send_message()
+                    await msg.answer("Сообщение отправлено")
+                    time.sleep(3)
+                    create_customer(Customer, name=customer, url=url, email=email)
+                    time.sleep(2)
+                    scrapper.go_back()
+                    time.sleep(5)
+                    scrapper.scroll()
+                else:
+                    logging.info("Пользователь сообщение получил")
+                    time.sleep(5)
+                    scrapper.scroll()
+            scrapper.next_page()
+    except NoSuchElementException as e:
+        logging.warning(e)
+        await msg.answer("Отправка закончилась с ошибкой!!!")
+    scrapper.browser.quit()
+    await msg.answer("Отправка закончилась!!! для запуска введите /start")
 
-    await check_users_from_sales_navigator_form()
 
-# !!!!!!!! КОНЕЦ СЦЕНАРИЯ С РАССЫЛКОЙ ДЛЯ ОДНОЙ КОМПАНИИ !!!!!!!!
+@dp.message_handler()
+async def input_value(msg: types.Message):
+    global filter
+    if filter:
+        global filter_list
+        filter_list.append(msg.text)
